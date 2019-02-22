@@ -67,12 +67,7 @@ TEST(EmbedderTest, CanLaunchAndShutdownWithValidProjectArgs) {
   fml::UniqueFD fixtures_dir = fml::OpenDirectory(
       testing::GetFixturesPath(), false, fml::FilePermission::kRead);
   std::vector<std::unique_ptr<fml::FileMapping>> aot_mappings;
-  if (fml::FileExists(fixtures_dir, "vm_snapshot_data")) {
-    MapAOTAsset(aot_mappings, fixtures_dir, "vm_snapshot_data", false,
-                &args.vm_snapshot_data, &args.vm_snapshot_data_size);
-    MapAOTAsset(aot_mappings, fixtures_dir, "vm_snapshot_instr", true,
-                &args.vm_snapshot_instructions,
-                &args.vm_snapshot_instructions_size);
+  if (fml::FileExists(fixtures_dir, "isolate_snapshot_data")) {
     MapAOTAsset(aot_mappings, fixtures_dir, "isolate_snapshot_data", false,
                 &args.isolate_snapshot_data, &args.isolate_snapshot_data_size);
     MapAOTAsset(aot_mappings, fixtures_dir, "isolate_snapshot_instr", true,

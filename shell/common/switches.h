@@ -28,16 +28,7 @@ DEF_SWITCH(AotSharedLibraryPath, "aot-shared-library-path", "Path to the *.so.")
 DEF_SWITCH(AotSnapshotPath,
            "aot-snapshot-path",
            "Path to the directory containing the four files specified by "
-           "AotVmSnapshotData, AotVmSnapshotInstructions, "
-           "AotVmSnapshotInstructions and AotIsolateSnapshotInstructions.")
-DEF_SWITCH(AotVmSnapshotData,
-           "vm-snapshot-data",
-           "The VM snapshot data that will be memory mapped as read-only. "
-           "AotSnapshotPath must be present.")
-DEF_SWITCH(AotVmSnapshotInstructions,
-           "vm-snapshot-instr",
-           "The VM instructions snapshot that will be memory mapped as read "
-           "and executable. AotSnapshotPath must be present.")
+           "AotIsolateSnapshotData  and AotIsolateSnapshotInstructions.")
 DEF_SWITCH(AotIsolateSnapshotData,
            "isolate-snapshot-data",
            "The isolate snapshot data that will be memory mapped as read-only. "

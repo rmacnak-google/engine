@@ -240,7 +240,7 @@ static void EmbedderInformationCallback(Dart_EmbedderInformation* info) {
 }
 
 fml::RefPtr<DartVM> DartVM::ForProcess(Settings settings) {
-  return ForProcess(settings, nullptr, nullptr, nullptr);
+  return ForProcess(settings, nullptr, nullptr);
 }
 
 static std::once_flag gVMInitialization;
@@ -249,22 +249,13 @@ static fml::RefPtr<DartVM> gVM;
 
 fml::RefPtr<DartVM> DartVM::ForProcess(
     Settings settings,
-    fml::RefPtr<DartSnapshot> vm_snapshot,
     fml::RefPtr<DartSnapshot> isolate_snapshot,
     fml::RefPtr<DartSnapshot> shared_snapshot) {
   std::lock_guard<std::mutex> lock(gVMMutex);
   std::call_once(gVMInitialization, [settings,          //
-                                     vm_snapshot,       //
                                      isolate_snapshot,  //
                                      shared_snapshot    //
   ]() mutable {
-    if (!vm_snapshot) {
-      vm_snapshot = DartSnapshot::VMSnapshotFromSettings(settings);
-    }
-    if (!(vm_snapshot && vm_snapshot->IsValid())) {
-      FML_LOG(ERROR) << "VM snapshot must be valid.";
-      return;
-    }
     if (!isolate_snapshot) {
       isolate_snapshot = DartSnapshot::IsolateSnapshotFromSettings(settings);
     }
@@ -276,7 +267,6 @@ fml::RefPtr<DartVM> DartVM::ForProcess(
       shared_snapshot = DartSnapshot::Empty();
     }
     gVM = fml::MakeRefCounted<DartVM>(settings,                     //
-                                      std::move(vm_snapshot),       //
                                       std::move(isolate_snapshot),  //
                                       std::move(shared_snapshot)    //
     );
@@ -290,11 +280,9 @@ fml::RefPtr<DartVM> DartVM::ForProcessIfInitialized() {
 }
 
 DartVM::DartVM(const Settings& settings,
-               fml::RefPtr<DartSnapshot> vm_snapshot,
                fml::RefPtr<DartSnapshot> isolate_snapshot,
                fml::RefPtr<DartSnapshot> shared_snapshot)
     : settings_(settings),
-      vm_snapshot_(std::move(vm_snapshot)),
       isolate_snapshot_(std::move(isolate_snapshot)),
       shared_snapshot_(std::move(shared_snapshot)),
       weak_factory_(this) {
@@ -400,8 +388,6 @@ DartVM::DartVM(const Settings& settings,
     TRACE_EVENT0("flutter", "Dart_Initialize");
     Dart_InitializeParams params = {};
     params.version = DART_INITIALIZE_PARAMS_CURRENT_VERSION;
-    params.vm_snapshot_data = vm_snapshot_->GetData()->GetSnapshotPointer();
-    params.vm_snapshot_instructions = vm_snapshot_->GetInstructionsIfPresent();
     params.create = reinterpret_cast<decltype(params.create)>(
         DartIsolate::DartIsolateCreateCallback);
     params.shutdown = reinterpret_cast<decltype(params.shutdown)>(
@@ -454,10 +440,6 @@ DartVM::~DartVM() {
 
 const Settings& DartVM::GetSettings() const {
   return settings_;
-}
-
-const DartSnapshot& DartVM::GetVMSnapshot() const {
-  return *vm_snapshot_.get();
 }
 
 IsolateNameServer* DartVM::GetIsolateNameServer() {

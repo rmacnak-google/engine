@@ -30,7 +30,6 @@ class DartVM : public fml::RefCountedThreadSafe<DartVM> {
 
   static fml::RefPtr<DartVM> ForProcess(
       Settings settings,
-      fml::RefPtr<DartSnapshot> vm_snapshot,
       fml::RefPtr<DartSnapshot> isolate_snapshot,
       fml::RefPtr<DartSnapshot> shared_snapshot);
 
@@ -41,8 +40,6 @@ class DartVM : public fml::RefCountedThreadSafe<DartVM> {
   static bool IsKernelMapping(const fml::FileMapping* mapping);
 
   const Settings& GetSettings() const;
-
-  const DartSnapshot& GetVMSnapshot() const;
 
   IsolateNameServer* GetIsolateNameServer();
 
@@ -56,7 +53,6 @@ class DartVM : public fml::RefCountedThreadSafe<DartVM> {
 
  private:
   const Settings settings_;
-  const fml::RefPtr<DartSnapshot> vm_snapshot_;
   IsolateNameServer isolate_name_server_;
   const fml::RefPtr<DartSnapshot> isolate_snapshot_;
   const fml::RefPtr<DartSnapshot> shared_snapshot_;
@@ -64,7 +60,6 @@ class DartVM : public fml::RefCountedThreadSafe<DartVM> {
   fml::WeakPtrFactory<DartVM> weak_factory_;
 
   DartVM(const Settings& settings,
-         fml::RefPtr<DartSnapshot> vm_snapshot,
          fml::RefPtr<DartSnapshot> isolate_snapshot,
          fml::RefPtr<DartSnapshot> shared_snapshot);
 

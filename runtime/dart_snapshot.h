@@ -17,13 +17,8 @@ namespace blink {
 
 class DartSnapshot : public fml::RefCountedThreadSafe<DartSnapshot> {
  public:
-  static const char* kVMDataSymbol;
-  static const char* kVMInstructionsSymbol;
   static const char* kIsolateDataSymbol;
   static const char* kIsolateInstructionsSymbol;
-
-  static fml::RefPtr<DartSnapshot> VMSnapshotFromSettings(
-      const Settings& settings);
 
   static fml::RefPtr<DartSnapshot> IsolateSnapshotFromSettings(
       const Settings& settings);

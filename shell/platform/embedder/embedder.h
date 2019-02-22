@@ -464,20 +464,6 @@ typedef struct {
   // to respond to platform messages from the Dart application. The callback
   // will be invoked on the thread on which the |FlutterEngineRun| call is made.
   FlutterPlatformMessageCallback platform_message_callback;
-  // The VM snapshot data buffer used in AOT operation. This buffer must be
-  // mapped in as read-only. For more information refer to the documentation on
-  // the Wiki at
-  // https://github.com/flutter/flutter/wiki/Flutter-engine-operation-in-AOT-Mode
-  const uint8_t* vm_snapshot_data;
-  // The size of the VM snapshot data buffer.
-  size_t vm_snapshot_data_size;
-  // The VM snapshot instructions buffer used in AOT operation. This buffer must
-  // be mapped in as read-execute. For more information refer to the
-  // documentation on the Wiki at
-  // https://github.com/flutter/flutter/wiki/Flutter-engine-operation-in-AOT-Mode
-  const uint8_t* vm_snapshot_instructions;
-  // The size of the VM snapshot instructions buffer.
-  size_t vm_snapshot_instructions_size;
   // The isolate snapshot data buffer used in AOT operation. This buffer must be
   // mapped in as read-only. For more information refer to the documentation on
   // the Wiki at

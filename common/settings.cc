@@ -17,8 +17,6 @@ Settings::~Settings() = default;
 std::string Settings::ToString() const {
   std::stringstream stream;
   stream << "Settings: " << std::endl;
-  stream << "vm_snapshot_data_path: " << vm_snapshot_data_path << std::endl;
-  stream << "vm_snapshot_instr_path: " << vm_snapshot_instr_path << std::endl;
   stream << "isolate_snapshot_data_path: " << isolate_snapshot_data_path
          << std::endl;
   stream << "isolate_snapshot_instr_path: " << isolate_snapshot_instr_path

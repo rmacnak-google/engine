@@ -38,11 +38,6 @@ struct Settings {
   ~Settings();
 
   // VM settings
-  std::string vm_snapshot_data_path;  // deprecated
-  MappingCallback vm_snapshot_data;
-  std::string vm_snapshot_instr_path;  // deprecated
-  MappingCallback vm_snapshot_instr;
-
   std::string isolate_snapshot_data_path;  // deprecated
   MappingCallback isolate_snapshot_data;
   std::string isolate_snapshot_instr_path;  // deprecated

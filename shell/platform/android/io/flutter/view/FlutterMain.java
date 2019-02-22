@@ -29,8 +29,6 @@ public class FlutterMain {
     // Must match values in sky::shell::switches
     private static final String AOT_SHARED_LIBRARY_PATH = "aot-shared-library-path";
     private static final String AOT_SNAPSHOT_PATH_KEY = "aot-snapshot-path";
-    private static final String AOT_VM_SNAPSHOT_DATA_KEY = "vm-snapshot-data";
-    private static final String AOT_VM_SNAPSHOT_INSTR_KEY = "vm-snapshot-instr";
     private static final String AOT_ISOLATE_SNAPSHOT_DATA_KEY = "isolate-snapshot-data";
     private static final String AOT_ISOLATE_SNAPSHOT_INSTR_KEY = "isolate-snapshot-instr";
     private static final String FLX_KEY = "flx";
@@ -39,10 +37,6 @@ public class FlutterMain {
     // XML Attribute keys supported in AndroidManifest.xml
     public static final String PUBLIC_AOT_AOT_SHARED_LIBRARY_PATH =
         FlutterMain.class.getName() + '.' + AOT_SHARED_LIBRARY_PATH;
-    public static final String PUBLIC_AOT_VM_SNAPSHOT_DATA_KEY =
-        FlutterMain.class.getName() + '.' + AOT_VM_SNAPSHOT_DATA_KEY;
-    public static final String PUBLIC_AOT_VM_SNAPSHOT_INSTR_KEY =
-        FlutterMain.class.getName() + '.' + AOT_VM_SNAPSHOT_INSTR_KEY;
     public static final String PUBLIC_AOT_ISOLATE_SNAPSHOT_DATA_KEY =
         FlutterMain.class.getName() + '.' + AOT_ISOLATE_SNAPSHOT_DATA_KEY;
     public static final String PUBLIC_AOT_ISOLATE_SNAPSHOT_INSTR_KEY =
@@ -54,8 +48,6 @@ public class FlutterMain {
 
     // Resource names used for components of the precompiled snapshot.
     private static final String DEFAULT_AOT_SHARED_LIBRARY_PATH= "app.so";
-    private static final String DEFAULT_AOT_VM_SNAPSHOT_DATA = "vm_snapshot_data";
-    private static final String DEFAULT_AOT_VM_SNAPSHOT_INSTR = "vm_snapshot_instr";
     private static final String DEFAULT_AOT_ISOLATE_SNAPSHOT_DATA = "isolate_snapshot_data";
     private static final String DEFAULT_AOT_ISOLATE_SNAPSHOT_INSTR = "isolate_snapshot_instr";
     private static final String DEFAULT_FLX = "app.flx";
@@ -68,8 +60,6 @@ public class FlutterMain {
 
     // Mutable because default values can be overridden via config properties
     private static String sAotSharedLibraryPath = DEFAULT_AOT_SHARED_LIBRARY_PATH;
-    private static String sAotVmSnapshotData = DEFAULT_AOT_VM_SNAPSHOT_DATA;
-    private static String sAotVmSnapshotInstr = DEFAULT_AOT_VM_SNAPSHOT_INSTR;
     private static String sAotIsolateSnapshotData = DEFAULT_AOT_ISOLATE_SNAPSHOT_DATA;
     private static String sAotIsolateSnapshotInstr = DEFAULT_AOT_ISOLATE_SNAPSHOT_INSTR;
     private static String sFlx = DEFAULT_FLX;
@@ -201,8 +191,6 @@ public class FlutterMain {
                     shellArgs.add("--" + AOT_SNAPSHOT_PATH_KEY + "=" +
                         PathUtils.getDataDirectory(applicationContext) + "/" + sFlutterAssetsDir);
                 }
-                shellArgs.add("--" + AOT_VM_SNAPSHOT_DATA_KEY + "=" + sAotVmSnapshotData);
-                shellArgs.add("--" + AOT_VM_SNAPSHOT_INSTR_KEY + "=" + sAotVmSnapshotInstr);
                 shellArgs.add("--" + AOT_ISOLATE_SNAPSHOT_DATA_KEY + "=" + sAotIsolateSnapshotData);
                 shellArgs.add("--" + AOT_ISOLATE_SNAPSHOT_INSTR_KEY + "=" + sAotIsolateSnapshotInstr);
             }
@@ -237,8 +225,6 @@ public class FlutterMain {
                 applicationContext.getPackageName(), PackageManager.GET_META_DATA).metaData;
             if (metadata != null) {
                 sAotSharedLibraryPath = metadata.getString(PUBLIC_AOT_AOT_SHARED_LIBRARY_PATH, DEFAULT_AOT_SHARED_LIBRARY_PATH);
-                sAotVmSnapshotData = metadata.getString(PUBLIC_AOT_VM_SNAPSHOT_DATA_KEY, DEFAULT_AOT_VM_SNAPSHOT_DATA);
-                sAotVmSnapshotInstr = metadata.getString(PUBLIC_AOT_VM_SNAPSHOT_INSTR_KEY, DEFAULT_AOT_VM_SNAPSHOT_INSTR);
                 sAotIsolateSnapshotData = metadata.getString(PUBLIC_AOT_ISOLATE_SNAPSHOT_DATA_KEY, DEFAULT_AOT_ISOLATE_SNAPSHOT_DATA);
                 sAotIsolateSnapshotInstr = metadata.getString(PUBLIC_AOT_ISOLATE_SNAPSHOT_INSTR_KEY, DEFAULT_AOT_ISOLATE_SNAPSHOT_INSTR);
                 sFlx = metadata.getString(PUBLIC_FLX_KEY, DEFAULT_FLX);
@@ -281,8 +267,6 @@ public class FlutterMain {
 
         sResourceExtractor
             .addResource(fromFlutterAssets(sFlx))
-            .addResource(fromFlutterAssets(sAotVmSnapshotData))
-            .addResource(fromFlutterAssets(sAotVmSnapshotInstr))
             .addResource(fromFlutterAssets(sAotIsolateSnapshotData))
             .addResource(fromFlutterAssets(sAotIsolateSnapshotInstr))
             .addResource(fromFlutterAssets(DEFAULT_KERNEL_BLOB));
@@ -293,8 +277,6 @@ public class FlutterMain {
 
         } else {
           sResourceExtractor
-            .addResource(sAotVmSnapshotData)
-            .addResource(sAotVmSnapshotInstr)
             .addResource(sAotIsolateSnapshotData)
             .addResource(sAotIsolateSnapshotInstr);
         }
@@ -329,8 +311,6 @@ public class FlutterMain {
     private static void initAot(Context applicationContext) {
         Set<String> assets = listAssets(applicationContext, "");
         sIsPrecompiledAsBlobs = assets.containsAll(Arrays.asList(
-            sAotVmSnapshotData,
-            sAotVmSnapshotInstr,
             sAotIsolateSnapshotData,
             sAotIsolateSnapshotInstr
         ));

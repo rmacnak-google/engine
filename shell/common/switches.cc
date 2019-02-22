@@ -191,14 +191,6 @@ blink::Settings SettingsFromCommandLine(const fml::CommandLine& command_line) {
   command_line.GetOptionValue(FlagForSwitch(Switch::AotSnapshotPath),
                               &aot_snapshot_path);
 
-  std::string aot_vm_snapshot_data_filename;
-  command_line.GetOptionValue(FlagForSwitch(Switch::AotVmSnapshotData),
-                              &aot_vm_snapshot_data_filename);
-
-  std::string aot_vm_snapshot_instr_filename;
-  command_line.GetOptionValue(FlagForSwitch(Switch::AotVmSnapshotInstructions),
-                              &aot_vm_snapshot_instr_filename);
-
   std::string aot_isolate_snapshot_data_filename;
   command_line.GetOptionValue(FlagForSwitch(Switch::AotIsolateSnapshotData),
                               &aot_isolate_snapshot_data_filename);
@@ -211,10 +203,6 @@ blink::Settings SettingsFromCommandLine(const fml::CommandLine& command_line) {
   if (aot_shared_library_path.size() > 0) {
     settings.application_library_path = aot_shared_library_path;
   } else if (aot_snapshot_path.size() > 0) {
-    settings.vm_snapshot_data_path = fml::paths::JoinPaths(
-        {aot_snapshot_path, aot_vm_snapshot_data_filename});
-    settings.vm_snapshot_instr_path = fml::paths::JoinPaths(
-        {aot_snapshot_path, aot_vm_snapshot_instr_filename});
     settings.isolate_snapshot_data_path = fml::paths::JoinPaths(
         {aot_snapshot_path, aot_isolate_snapshot_data_filename});
     settings.isolate_snapshot_instr_path = fml::paths::JoinPaths(

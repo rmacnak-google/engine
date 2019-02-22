@@ -110,8 +110,6 @@ template("test_fixtures") {
     ]
 
     outputs = [
-      "$fixtures_location/vm_snapshot_data",
-      "$fixtures_location/vm_snapshot_instr",
       "$fixtures_location/isolate_snapshot_data",
       "$fixtures_location/isolate_snapshot_instr",
     ]
@@ -120,8 +118,6 @@ template("test_fixtures") {
       "--causal_async_stacks",
       "--deterministic",
       "--snapshot_kind=app-aot-blobs",
-      "--vm_snapshot_data=" + rebase_path("$fixtures_location/vm_snapshot_data"),
-      "--vm_snapshot_instructions=" + rebase_path("$fixtures_location/vm_snapshot_instr"),
       "--isolate_snapshot_data=" + rebase_path("$fixtures_location/isolate_snapshot_data"),
       "--isolate_snapshot_instructions=" + rebase_path("$fixtures_location/isolate_snapshot_instr"),
       rebase_path("$fixtures_location/$kernel_out")
