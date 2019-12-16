@@ -19,6 +19,7 @@ void InitBuiltinLibrariesForIsolate(
     fdio_ns_t* namespc,
     int stdoutfd,
     int stderrfd,
+    fidl::VectorPtr<fuchsia::sys::ProgramMetadata> program_metadata,
     fidl::InterfaceHandle<fuchsia::sys::Environment> environment,
     zx::channel directory_request,
     bool service_isolate);

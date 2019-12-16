@@ -383,8 +383,9 @@ bool DartComponentController::Main() {
   svc->Connect(environment.NewRequest());
 
   InitBuiltinLibrariesForIsolate(
-      url_, namespace_, stdoutfd_, stderrfd_, std::move(environment),
-      std::move(directory_request), false /* service_isolate */);
+      url_, namespace_, stdoutfd_, stderrfd_, startup_info_.program_metadata,
+      std::move(environment), std::move(directory_request),
+      false /* service_isolate */);
   namespace_ = nullptr;
 
   Dart_ExitScope();

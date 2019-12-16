@@ -178,7 +178,7 @@ Dart_Isolate CreateServiceIsolate(const char* uri,
   SHUTDOWN_ON_ERROR(result);
 
   InitBuiltinLibrariesForIsolate(std::string(uri), nullptr, fileno(stdout),
-                                 fileno(stderr), nullptr, zx::channel(), true);
+                                 fileno(stderr), nullptr, nullptr, zx::channel(), true);
 
   // Make runnable.
   Dart_ExitScope();

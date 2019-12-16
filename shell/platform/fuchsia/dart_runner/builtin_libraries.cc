@@ -99,6 +99,7 @@ void InitBuiltinLibrariesForIsolate(
     fdio_ns_t* namespc,
     int stdoutfd,
     int stderrfd,
+    fidl::VectorPtr<fuchsia::sys::ProgramMetadata> program_metadata,
     fidl::InterfaceHandle<fuchsia::sys::Environment> environment,
     zx::channel directory_request,
     bool service_isolate) {
@@ -205,6 +206,26 @@ void InitBuiltinLibrariesForIsolate(
   stdio_args[1] = Dart_NewInteger(stdoutfd);
   stdio_args[2] = Dart_NewInteger(stderrfd);
   result = Dart_Invoke(io_lib, ToDart("_setStdioFDs"), 3, stdio_args);
+  FML_CHECK(!tonic::LogIfError(result));
+
+  // Set up Platform.environment.
+  Dart_Handle env_pairs;
+  if (program_metadata) {
+    env_pairs = Dart_NewList(program_metadata->size() * 2);
+    for (size_t i = 0; i < program_metadata->size(); i++) {
+      result =
+          Dart_ListSetAt(env_pairs, i * 2, ToDart(program_metadata->at(i).key));
+      FML_CHECK(!tonic::LogIfError(result));
+      result = Dart_ListSetAt(env_pairs, i * 2 + 1,
+                              ToDart(program_metadata->at(i).value));
+      FML_CHECK(!tonic::LogIfError(result));
+    }
+  } else {
+    env_pairs = Dart_NewList(0);
+  }
+  Dart_Handle env_args[1];
+  env_args[0] = env_pairs;
+  result = Dart_Invoke(io_lib, ToDart("_setEnvironment"), 1, env_args);
   FML_CHECK(!tonic::LogIfError(result));
 
   // Disable some dart:io operations.

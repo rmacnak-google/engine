@@ -196,6 +196,8 @@ Application::Application(
 
   // TODO: LaunchInfo::err.
 
+  // TODO: StartupInfo::program_metadata.
+
   // LaunchInfo::service_request optional.
   if (launch_info.directory_request) {
     outgoing_dir_->Serve(fuchsia::io::OPEN_RIGHT_READABLE |
