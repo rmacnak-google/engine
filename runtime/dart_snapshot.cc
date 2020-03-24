@@ -26,8 +26,6 @@ const char* DartSnapshot::kIsolateInstructionsSymbol =
 #define DART_SNAPSHOT_STATIC_LINK \
   (OS_WIN || (OS_ANDROID && FLUTTER_JIT_RUNTIME))
 
-#if !DART_SNAPSHOT_STATIC_LINK
-
 static std::unique_ptr<const fml::Mapping> GetFileMapping(
     const std::string& path,
     bool executable) {
@@ -37,6 +35,8 @@ static std::unique_ptr<const fml::Mapping> GetFileMapping(
     return fml::FileMapping::CreateReadOnly(path);
   }
 }
+
+#if !DART_SNAPSHOT_STATIC_LINK
 
 // The first party embedders don't yet use the stable embedder API and depend on
 // the engine figuring out the locations of the various heap and instructions
@@ -167,10 +167,67 @@ fml::RefPtr<DartSnapshot> DartSnapshot::VMSnapshotFromSettings(
   return nullptr;
 }
 
+static const char* kCacheDataPath = "cache-data.bin";
+static const char* kCacheInstrPath = "cache-instr.bin";
+
+static bool CanUseCacheSnapshot() {
+#if defined(_M_IX86) || defined(__i386__)
+  return false;
+#else
+  return !DartVM::IsRunningPrecompiledCode();
+#endif
+}
+
+void DartSnapshot::SaveCacheSnapshot(const Settings& settings) {
+  TRACE_EVENT0("flutter", "DartSnapshot::CacheSnapshot");
+  if (!CanUseCacheSnapshot()) {
+    return;
+  }
+
+  uint8_t* data = nullptr;
+  intptr_t data_size = 0;
+  uint8_t* instr = nullptr;
+  intptr_t instr_size = 0;
+  Dart_Handle result =
+      Dart_CreateAppJITSnapshotAsBlobs(&data, &data_size, &instr, &instr_size);
+  if (Dart_IsError(result)) {
+    FML_LOG(ERROR) << "Failed to generate cache snapshot";
+    return;
+  }
+
+  auto tmp_dir = fml::OpenDirectory(settings.temp_directory_path.c_str(), false,
+                                    fml::FilePermission::kReadWrite);
+  if (!WriteAtomically(tmp_dir, kCacheDataPath,
+                       fml::NonOwnedMapping(data, data_size)) ||
+      !WriteAtomically(tmp_dir, kCacheInstrPath,
+                       fml::NonOwnedMapping(instr, instr_size))) {
+    FML_LOG(ERROR) << "Failed to write cache snapshot";
+    fml::UnlinkFile(tmp_dir, kCacheDataPath);
+    fml::UnlinkFile(tmp_dir, kCacheInstrPath);
+  }
+}
+
+static fml::RefPtr<DartSnapshot> LoadCacheSnapshot(const Settings& settings) {
+  if (!CanUseCacheSnapshot()) {
+    return nullptr;
+  }
+  std::shared_ptr<const fml::Mapping> data = GetFileMapping(
+      settings.temp_directory_path + "/" + kCacheDataPath, false);
+  std::shared_ptr<const fml::Mapping> instr = GetFileMapping(
+      settings.temp_directory_path + "/" + kCacheInstrPath, true);
+  return fml::MakeRefCounted<DartSnapshot>(data, instr);
+}
+
 fml::RefPtr<DartSnapshot> DartSnapshot::IsolateSnapshotFromSettings(
     const Settings& settings) {
   TRACE_EVENT0("flutter", "DartSnapshot::IsolateSnapshotFromSettings");
-  auto snapshot =
+  auto snapshot = LoadCacheSnapshot(settings);
+  if (snapshot && snapshot->IsValid()) {
+    FML_LOG(ERROR) << "Using cache";
+    return snapshot;
+  }
+  FML_LOG(ERROR) << "Not using cache";
+  snapshot =
       fml::MakeRefCounted<DartSnapshot>(ResolveIsolateData(settings),         //
                                         ResolveIsolateInstructions(settings)  //
       );

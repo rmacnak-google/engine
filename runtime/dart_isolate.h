@@ -421,6 +421,7 @@ class DartIsolate : public UIDartState {
   [[nodiscard]] bool LoadLibraries();
 
   bool UpdateThreadPoolNames() const;
+  void CacheSnapshot();
 
   [[nodiscard]] bool MarkIsolateRunnable();
 

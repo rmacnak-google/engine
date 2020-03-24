@@ -102,6 +102,8 @@ class DartSnapshot : public fml::RefCountedThreadSafe<DartSnapshot> {
   static fml::RefPtr<DartSnapshot> IsolateSnapshotFromSettings(
       const Settings& settings);
 
+  static void SaveCacheSnapshot(const Settings& settings);
+
   //----------------------------------------------------------------------------
   /// @brief      Determines if this snapshot contains a heap component. Since
   ///             the instructions component is optional, the method does not

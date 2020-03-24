@@ -194,6 +194,11 @@ bool DartIsolate::Initialize(Dart_Isolate dart_isolate) {
     return false;
   }
 
+  if (auto task_runner = GetTaskRunners().GetUITaskRunner()) {
+    task_runner->PostDelayedTask([this] { CacheSnapshot(); },
+                                 fml::TimeDelta::FromSeconds(5));
+  }
+
   phase_ = Phase::Initialized;
   return true;
 }
@@ -251,6 +256,21 @@ bool DartIsolate::UpdateThreadPoolNames() const {
   }
 
   return true;
+}
+
+void DartIsolate::CacheSnapshot() {
+  if (!isolate()) {
+    return;
+  }
+
+  int64_t start = Dart_TimelineGetMicros();
+  {
+    tonic::DartIsolateScope scope(isolate());
+    tonic::DartApiScope api_scope;
+    DartSnapshot::SaveCacheSnapshot(GetIsolateGroupData().GetSettings());
+  }
+  int64_t end = Dart_TimelineGetMicros();
+  FML_LOG(ERROR) << "Took " << (end - start) / 1000 << " ms";
 }
 
 bool DartIsolate::LoadLibraries() {
